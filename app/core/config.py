@@ -1,6 +1,7 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import EmailStr, MongoDsn, computed_field
+from pydantic import EmailStr, MongoDsn, computed_field, field_validator
 from functools import lru_cache
+from typing import Any
 
 
 class Settings(BaseSettings):
@@ -10,6 +11,8 @@ class Settings(BaseSettings):
     MONGO_PASSWORD: str
     MONGO_HOST: str
     MONGO_QUERY: str
+
+    DEBUG: bool
 
     DATABASE_NAME: str
 
@@ -34,6 +37,19 @@ class Settings(BaseSettings):
             # port="27017",
             # path="",
         )
+
+    @field_validator("DEBUG")
+    @classmethod
+    def debug_str_to_bool(cls, value: Any):
+        if isinstance(value, str):
+            if value.lower() in {"true", "1", "yes"}:
+                return True
+            elif value.lower() in {"false", "0", "no"}:
+                return False
+            else:
+                raise ValueError("Invalid `DEBUG` env")
+        # the `bool` pydantic validator will do some type conversions
+        return value
 
 
 @lru_cache

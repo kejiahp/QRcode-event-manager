@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>{% block title %} QR code event manager {% endblock %}</title>
+
+    <link
+      href="{{url_for('static', path='/css/tailwind-output.css')}}"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body class="bg-white dark:bg-gray-700 text-black dark:text-white">
+    <main id="content">{% block content %}{% endblock %}</main>
+    <footer
+      class="flex items-center justify-center border-t h-[10vh] bg-gray-100 dark:bg-purple-800"
+    >
+      {% block footer %} &copy; Copyright
+      <span class="mx-1" id="copyrightYear">2025</span> by
+      <a
+        class="ml-1 underline text-purple-500 dark:text-gray-500 font-semibold"
+        target="_blank"
+        href="https://popoola-morenikeji-elijah.vercel.app/"
+        >popoolakejiah.com</a
+      >. {% endblock %}
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.0.0/dist/flowbite.min.js"></script>
+
+    <script>
+      (function () {
+        document.getElementById("copyrightYear").textContent =
+          new Date().getFullYear();
+      })();
+    </script>
+
+    {% block extra_scripts %} {% endblock extra_scripts %}
+
+    <!-- Hot reload script -->
+    {% if DEBUG %} {{ hot_reload.script(url_for('hot-reload')) | safe }}
+    {%endif%}
+  </body>
+</html>

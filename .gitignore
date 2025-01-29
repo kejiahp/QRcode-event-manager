@@ -4,6 +4,9 @@
 # virtual environement
 virtual_env/
 
+# node modules
+node_modules/
+
 .idea
 .ipynb_checkpoints
 .mypy_cache

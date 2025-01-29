@@ -1,11 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Welcome</title>
-  </head>
-  <body>
-    <h1>Nothing to see here {{id}}</h1>
-  </body>
-</html>
+{% extends "base.html" %} {% block content %}
+
+<div
+  class="w-screen h-[90vh] overflow-y-scroll flex gap-2 justify-center items-center flex-col"
+>
+  <a href="{{ url_for('auth') }}#login" class="btn rounded-sm w-[100px]"
+    >Login</a
+  >
+  <a
+    href="{{ url_for('auth') }}#signup"
+    class="btn rounded-sm bg-transparent border border-purple-500 text-purple-500 w-[100px]"
+  >
+    Sign up
+  </a>
+  <a href="{{ url_for('auth') }}" class="underline text-purple-500"
+    >Forgot password</a
+  >
+</div>
+{% endblock %}
