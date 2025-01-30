@@ -5,7 +5,8 @@ from urllib.parse import quote_plus
 from enum import Enum
 from typing import Union
 
-uri = "mongodb://%s:%s@%s" % (
+uri = "%s://%s:%s@%s" % (
+    settings.MONGO_SCHEME,
     quote_plus(settings.MONGO_USER),
     quote_plus(settings.MONGO_PASSWORD),
     settings.MONGO_HOST,
@@ -22,7 +23,7 @@ class MONGO_COLLECTIONS(Enum):
 
 def get_collection(collection_name: MONGO_COLLECTIONS) -> Union[Collection, None]:
     try:
-        coll_name = MONGO_COLLECTIONS[collection_name].value
+        coll_name = collection_name.value
         return db[coll_name]
     # catching the error just to throw it again? Yes, i know 🙃
     except AttributeError as e:
