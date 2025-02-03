@@ -1,6 +1,29 @@
-document
-  .getElementById("authenticationBtn")
-  .addEventListener("click", authenticationHandler);
+/**
+ * @typedef {Object} AuthPayload
+ * @property {string} email
+ * @property {string} password
+ * @property {"sign_up" | "login"} authType
+ */
+
+/**
+ * @typedef {Object} SuccessResponse
+ * @property {Object | null} data
+ * @property {string} message
+ * @property {number} status_code
+ * @property {boolean} success
+ */
+
+/**
+ * @typedef {Object} ErrorDetails
+ * @property {string} message
+ * @property {status_code} number
+ * @property {boolean} success
+ */
+
+/**
+ * @typedef {Object} ErrorResponse
+ * @property {ErrorDetails} detail
+ */
 
 /**
  * Login or Sign Up users
@@ -9,31 +32,116 @@ document
  */
 function authenticationHandler(event) {
   event.preventDefault();
+
+  const SIGN_UP_PATH = "/auth/sign-up";
+  const LOGIN_PATH = "/auth/login";
+
   /**@type {HTMLInputElement} */
   const email = document.getElementById("email"),
     password = document.getElementById("password"),
     authType = document.getElementsByName("auth_type");
 
-  for (let i = 0; i < authType.length; i++) {
-    console.log(authType[i].value);
+  /**@type {HTMLSpanElement} */
+  const authOptErrMsg = document.getElementById("authOptErrMsg");
+  /**@type {HTMLSpanElement} */
+  const emailErrMsg = document.getElementById("emailErrMsg");
+  /**@type {HTMLSpanElement} */
+  const passwordErrMsg = document.getElementById("passwordErrMsg");
+
+  if (!email.value || email.value.length < 8) {
+    emailErrMsg.textContent = "Email is required";
+  } else {
+    emailErrMsg.textContent = "";
+  }
+  if (!password.value || password.value.length < 8) {
+    passwordErrMsg.textContent =
+      "Password lenght must be 8 characters or greater";
+  } else {
+    passwordErrMsg.textContent = "";
   }
 
-  // Toastify({
-  //   text: "Failed to confirm order",
-  //   duration: 5000,
-  //   close: true,
-  //   gravity: "bottom", // `top` or `bottom`
-  //   position: "right", // `left`, `center` or `right`
-  //   stopOnFocus: true, // Prevents dismissing of toast on hover
-  //   className:
-  //     "flex items-center p-4 mb-4 rounded-lg shadow border border-red-500 bg-white dark:bg-gray-800",
-  //   style: {
-  //     background: "inherit",
-  //     color: "inherit",
-  //   },
-  // }).showToast();
+  /**@type {string | null} */
+  let checkedValue = null;
+  for (let i = 0; i < authType.length; i++) {
+    if (authType[i].checked) {
+      checkedValue = authType[i].value;
+    }
+  }
+  if (!checkedValue) {
+    authOptErrMsg.textContent = "A authentication type is required";
+  } else {
+    authOptErrMsg.textContent = "";
+  }
 
-  // console.log({
-  //     email, password, authType
-  // })
+  /**@type {AuthPayload} */
+  const payload = {
+    email: email.value,
+    password: password.value,
+    authType: checkedValue,
+  };
+
+  if (!payload.email || !payload.password || !payload.authType) {
+    displayToast("error", "All fields are required");
+    return;
+  }
+
+  if (payload.authType === "login") {
+    // remove `authType`
+    delete payload.authType;
+
+    fetch(LOGIN_PATH, {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    })
+      .then((res) => res.json())
+      .then((/**@type {SuccessResponse | ErrorResponse}*/ res) => {
+        if (res.detail && !res.detail.success) {
+          displayToast("error", res.detail.message);
+        }
+        if (res.success && res.message) {
+          displayToast("success", res.message);
+          window.location.replace("/event");
+        }
+      })
+      .catch((/**@type {Error}*/ error) => {
+        console.error(error);
+        displayToast("error", error.message);
+      });
+  } else if (payload.authType === "sign_up") {
+    // remove `authType`
+    delete payload.authType;
+
+    fetch(SIGN_UP_PATH, {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: {
+        "Content-type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((/**@type {SuccessResponse | ErrorResponse}*/ res) => {
+        if (res.detail && !res.detail.success) {
+          displayToast("error", res.detail.message);
+        }
+        if (res.success && res.message) {
+          displayToast("success", res.message);
+        }
+      })
+      .catch((/**@type {Error}*/ error) => {
+        console.error(error);
+        displayToast("error", error.message);
+      });
+  } else {
+    displayToast(
+      "error",
+      "Invalid authentication type, users can only sign up or login"
+    );
+  }
 }
+
+document
+  .getElementById("authenticationBtn")
+  .addEventListener("click", authenticationHandler);

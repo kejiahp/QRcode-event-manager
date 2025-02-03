@@ -4,21 +4,31 @@
   class="w-screen h-[90vh] overflow-y-scroll flex gap-2 justify-center items-center flex-col"
 >
   <section id="authenitcation">
-    <form class="flex flex-col gap-2 text-center">
+    <form class="flex flex-col gap-2 text-center w-full sm:w-[400px]">
       <h1 class="font-bold text-2xl">Login or Sign Up</h1>
-      <input type="text" id="email" placeholder="Enter your email" required />
-      <input
-        type="text"
-        id="password"
-        placeholder="Enter your password"
-        required
-      />
+      <label for="email">
+        <input type="text" id="email" placeholder="Enter your email" required />
+        <small class="text-red-500" id="emailErrMsg" class="h-[16px]"
+          >&nbsp;</small
+        >
+      </label>
+      <label for="password">
+        <input
+          type="text"
+          id="password"
+          placeholder="Enter your password"
+          required
+        />
+        <small class="text-red-500" id="passwordErrMsg" class="h-[16px]"
+          >&nbsp;</small
+        >
+      </label>
 
       <div class="mt-5">
         <p>Authentication type</p>
         <div class="flex items-center gap-5">
           <label class="flex items-center gap-1">
-            <input type="radio" value="login" name="auth_type" />
+            <input type="radio" value="login" checked name="auth_type" />
             <sm>Login</sm>
           </label>
 
@@ -29,9 +39,16 @@
             <sm>Sign Up</sm>
           </label>
         </div>
+        <small class="text-red-500" id="authOptErrMsg" class="h-[16px]"
+          >&nbsp;</small
+        >
       </div>
 
-      <button id="authenticationBtn" type="submit" class="btn rounded-sm mt-5">
+      <button
+        id="authenticationBtn"
+        type="submit"
+        class="cursor-pointer btn rounded-sm mt-5"
+      >
         GO
       </button>
     </form>

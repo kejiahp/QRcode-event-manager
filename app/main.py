@@ -2,7 +2,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from app.auth import auth_routes
-from app.user import user_routes
+from app.events import events_routes
 from fastapi.middleware.gzip import GZipMiddleware
 import arel
 from fastapi.staticfiles import StaticFiles
@@ -44,7 +44,7 @@ application.add_middleware(GZipMiddleware)
 
 # Include routers
 application.include_router(auth_routes.router)
-application.include_router(user_routes.router)
+application.include_router(events_routes.router)
 
 
 @application.get("/", name="homepage")

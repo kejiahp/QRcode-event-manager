@@ -25,7 +25,7 @@ class UserModel(UserBase):
         alias="_id", default=None
     )  # `default=None` makes it optional
     password_reset_key: str | None = Field(default=None)
-    is_active: bool = False
+    is_active: bool = True
     created_at: datetime = Field(default_factory=datetime.now)
 
     model_config = ConfigDict(
@@ -42,7 +42,7 @@ class PublicUserModel(BaseModel):
     created_at: datetime
 
     model_config = ConfigDict(
-        allow_population_by_field_name=True,
+        populate_by_name=True,
         arbitrary_types_allowed=True,
         json_encoders={ObjectId: str},
     )

@@ -1,6 +1,8 @@
 from bson import ObjectId
 from pydantic import BaseModel, Field, GetCoreSchemaHandler
 from pydantic.json_schema import JsonSchemaValue
+from typing import Dict, Union, Any
+from fastapi.exceptions import HTTPException
 
 
 # Helper class for MongoDB ObjectId
@@ -33,4 +35,26 @@ class PyObjectId(ObjectId):
 
 class Message(BaseModel):
     message: str
+    status_code: int
     success: bool
+    data: Union[Dict[str, Any], list, None] = None
+
+
+class HTTPMessageException(HTTPException):
+    def __init__(
+        self,
+        status_code,
+        message: str,
+        success: bool,
+        headers=None,
+    ):
+        _detail = Message(
+            message=message, status_code=status_code, success=success, data=None
+        )
+        _detail = _detail.model_dump()
+        del _detail["data"]
+        super().__init__(status_code, _detail, headers)
+
+
+def collection_error_msg(func_name: str, collection_name: str) -> str:
+    return f"[{func_name}]: Collection with name: {collection_name} was not found."
