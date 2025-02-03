@@ -1,7 +1,101 @@
 {% extends "base.html" %} {% block content %}
 
-<div>
-  <h1>EVENTS PAGE {{token}}</h1>
+<div class="w-screen h-[90vh] overflow-y-scroll p-5">
+  <h1 class="text-2xl font-semibold">
+    <span class="text-purple-500">{{email}}'s</span> events page
+  </h1>
+
+  <section class="my-5 text-sm bg-transparent dark:bg-gray-600 p-2 rounded-lg">
+    <h3 class="font-medium mb-2">Create an event</h3>
+    <form
+      method="POST"
+      action="{{ url_for('create_event') }}"
+      class="flex flex-col gap-2"
+    >
+      <label for="eventName">
+        <p>Name</p>
+        <input
+          name="name"
+          type="text"
+          id="eventName"
+          placeholder="Enter events name"
+          required
+        />
+        {#
+        <small class="text-red-500" id="eventNameErrMsg" class="h-[16px]"
+          >fd&nbsp;</small
+        >
+        #}
+      </label>
+
+      <label for="eventDesc">
+        <p>Description</p>
+        <textarea
+          name="description"
+          type="text"
+          id="eventDesc"
+          placeholder="Enter events name"
+          required
+        ></textarea>
+        {#
+        <small class="text-red-500" id="eventDescErrMsg" class="h-[16px]"
+          >fd&nbsp;</small
+        >
+        #}
+      </label>
+
+      <label for="eventStart">
+        <p>Start date and time</p>
+        <input
+          name="start_date"
+          type="datetime-local"
+          id="eventStart"
+          placeholder="Enter events name"
+          required
+        />
+        {#
+        <small class="text-red-500" id="eventStartErrMsg" class="h-[16px]"
+          >fd&nbsp;</small
+        >
+        #}
+      </label>
+
+      <label for="eventEnd">
+        <p>End date and time</p>
+        <input
+          name="end_date"
+          type="datetime-local"
+          id="eventEnd"
+          placeholder="Enter events name"
+          required
+        />
+        {#
+        <small class="text-red-500" id="eventEndErrMsg" class="h-[16px]"
+          >fd&nbsp;</small
+        >
+        #}
+      </label>
+
+      <button class="btn rounded-none mt-5 cursor-pointer">Create</button>
+    </form>
+  </section>
+
+  <section class="flex flex-col gap-5">
+    <h3 class="font-medium text-lg">Event listing</h3>
+    <ul class="list-decimal list-inside">
+      {% if events %} {% for event in events %}
+      <li>
+        <a
+          class="underline text-purple-300"
+          href="{{ url_for('single_event', event_id=event.id) }}"
+          >{{event.name}} - {{event.description}}</a
+        >
+      </li>
+      {% endfor %} {%else%}
+      <p>No events</p>
+      {% endif %}
+    </ul>
+  </section>
 </div>
 
 {% endblock content %} {% block extra_scripts %}

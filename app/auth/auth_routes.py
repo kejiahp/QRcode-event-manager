@@ -38,7 +38,7 @@ def create_user(user_dto: CreateUserModel):
         )
     user_dto.hashed_password = get_password_hash(user_dto.hashed_password)
     user = UserModel(**user_dto.model_dump())
-    result = user_collection.insert_one(user.model_dump())
+    result = user_collection.insert_one(user.model_dump(by_alias=True, exclude=["id"]))
     new_user = user_collection.find_one({"_id": result.inserted_id})
     return Message(
         status_code=status.HTTP_201_CREATED,

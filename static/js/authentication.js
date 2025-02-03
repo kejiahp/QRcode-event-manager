@@ -103,7 +103,7 @@ function authenticationHandler(event) {
         }
         if (res.success && res.message) {
           displayToast("success", res.message);
-          window.location.replace("/event");
+          window.location.replace("/events");
         }
       })
       .catch((/**@type {Error}*/ error) => {

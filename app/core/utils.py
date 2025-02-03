@@ -40,6 +40,11 @@ class Message(BaseModel):
     data: Union[Dict[str, Any], list, None] = None
 
 
+class TokenPayload(BaseModel):
+    exp: int
+    sub: str
+
+
 class HTTPMessageException(HTTPException):
     def __init__(
         self,
