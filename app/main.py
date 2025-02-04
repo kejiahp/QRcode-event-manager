@@ -1,12 +1,13 @@
 # import uvicorn
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from app.auth import auth_routes
 from app.events import events_routes
 from fastapi.middleware.gzip import GZipMiddleware
 import arel
 from fastapi.staticfiles import StaticFiles
 from app.core import settings, templates
+from app.core.deps import IsUserAuthenticatedDeps
 from starlette.middleware.cors import CORSMiddleware
 
 application = FastAPI()
@@ -54,8 +55,10 @@ def get_homepage(request: Request) -> HTMLResponse:
 
 @application.get("/authentication", name="auth")
 def get_authentication_page(
-    request: Request,
+    request: Request, redirect_url: IsUserAuthenticatedDeps
 ) -> HTMLResponse:
+    if isinstance(redirect_url, RedirectResponse):
+        return redirect_url
     return templates.TemplateResponse(request=request, name="authentication.html")
 
 
@@ -67,3 +70,7 @@ def get_authentication_page(
 #         port=5000,
 #         reload=True if settings.DEBUG else False,
 #     )
+
+# TODO: catch error
+# bson.errors.InvalidId
+# HTTPMessageException

@@ -5,7 +5,6 @@ from datetime import datetime
 from typing import Union, List, Optional
 
 from app.auth.auth_models import PyObjectId
-from app.core.utils import PyObjectId as PyObjectIdV2
 
 
 class EventModel(BaseModel):
@@ -61,12 +60,16 @@ class EventCollection(BaseModel):
 
 
 class InviteModel(BaseModel):
-    id: Optional[PyObjectIdV2] = Field(alias="_id", default=None)
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
     email: EmailStr = Field(max_length=255)
     fullname: str
-    event_invited_to: PyObjectIdV2
+    event_invited_to: PyObjectId
     code: str
-    qr_code_img: HttpUrl
+    invite_accepted: bool = False
+    invite_accepted_at: Optional[datetime] = None
+    qr_code_img_url: HttpUrl
+    qr_code_img_public_key: str
+    created_by: PyObjectId
     created_at: datetime = Field(default_factory=datetime.now)
 
     model_config = ConfigDict(
@@ -79,3 +82,12 @@ class InviteModel(BaseModel):
 class CreateInviteModel(BaseModel):
     email: EmailStr = Field(max_length=255)
     fullname: str
+
+
+class UpdateInviteModel(BaseModel):
+    invite_accepted: Optional[bool] = None
+    invite_accepted_at: Optional[datetime] = None
+
+
+class InviteCollection(BaseModel):
+    invites: List[InviteModel]

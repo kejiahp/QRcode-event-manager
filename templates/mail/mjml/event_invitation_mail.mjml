@@ -1,0 +1,23 @@
+<mjml>
+    <mj-head>
+      <mj-preview>Your Exclusive Invitation to {{event_name}}</mj-preview>
+    </mj-head>
+    <mj-body>
+      <mj-section>
+        <mj-column>
+          <mj-text font-size="20px" font-weight="bold">You're Invited to {{event_name}}! 🎉</mj-text>
+          <mj-text font-size="16px">Dear {{fullname}},</mj-text>
+          <mj-text>
+            You are cordially invited to <strong>{{event_name}}</strong>! We can’t wait to welcome you for an exciting and memorable event.
+          </mj-text>
+          <mj-button href="{{qrcode_img_url}}" background-color="#007BFF" color="#ffffff">
+            Access Your Invitation
+          </mj-button>
+          <mj-text>
+            We look forward to seeing you there!
+          </mj-text>
+          <mj-text>Best regards,<br>{{organiser_name}}<br>{{organiser_contact_info}}</mj-text>
+        </mj-column>
+      </mj-section>
+    </mj-body>
+  </mjml>

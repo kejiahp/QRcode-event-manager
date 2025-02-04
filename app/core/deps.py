@@ -1,6 +1,7 @@
 from bson import ObjectId
-from fastapi import Depends, Cookie, status
-from typing import Annotated, Union
+from fastapi.responses import RedirectResponse
+from fastapi import Depends, Cookie, status, Request, HTTPException
+from typing import Annotated, Union, Optional
 import jwt
 from jwt.exceptions import InvalidTokenError
 from pydantic import ValidationError
@@ -10,6 +11,26 @@ from .utils import HTTPMessageException, TokenPayload, collection_error_msg
 from app.auth.auth_models import UserModel
 
 TokenFromCookieDep = Annotated[Union[str, None], Cookie()]
+
+
+def is_user_authenticated(
+    request: Request, tk: TokenFromCookieDep = None
+) -> RedirectResponse | None:
+    if tk is not None:
+        try:
+            payload = jwt.decode(tk, settings.SECRET_KEY, security.ALGORITHM)
+            # validate token
+            TokenPayload(**payload)
+            return RedirectResponse(
+                status_code=status.HTTP_302_FOUND, url=request.url_for("events")
+            )
+        except Exception:
+            return None
+
+
+IsUserAuthenticatedDeps = Annotated[
+    Optional[RedirectResponse], Depends(is_user_authenticated)
+]
 
 
 def get_current_user(tk: TokenFromCookieDep = None) -> UserModel:

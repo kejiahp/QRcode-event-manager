@@ -38,8 +38,19 @@ class Settings(BaseSettings):
     CLOUDINARY_API_KEY: int
     CLOUDINARY_API_SECRET: str
 
-    MAILING_EMAIL: EmailStr
-    MAILING_PASSWORD: str
+    SMTP_USER_EMAIL: EmailStr
+    SMTP_PASSWORD: str
+    SMTP_HOST: str = "smtp.gmail.com"
+    SMTP_PORT: int = 587  # 465
+    SMTP_TLS: bool = True
+    SMTP_SSL: bool = False
+    EMAILS_FROM_EMAIL: str | None = None
+    EMAILS_FROM_NAME: str | None = None
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def emails_enabled(self) -> bool:
+        return bool(self.SMTP_HOST and self.EMAILS_FROM_EMAIL)
 
     SECRET_KEY: str = Field(default_factory=lambda: secrets.token_urlsafe(32))
     # 60 minutes * 24 hours * 8 days = 8 days

@@ -1,0 +1,33 @@
+{% extends "base.html" %} {% block content %}
+
+<div class="w-screen h-[90vh] overflow-y-scroll p-5 text-sm">
+    <div class="flex items-center gap-2">
+        <a href={{ url_for('events') }} class="cursor-pointer rounded-sm border border-purple-500 px-1 py-1 flex items-center justify-center w-fit">
+        <svg class="inline" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M14.71 6.71c-.39-.39-1.02-.39-1.41 0L8.71 11.3c-.39.39-.39 1.02 0 1.41l4.59 4.59c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L10.83 12l3.88-3.88c.39-.39.38-1.03 0-1.41z"/></svg>
+      </a>
+      <span class="text-2xl font-semibold">Invite details</span>
+    </div>
+  
+    <hr class="my-2" />
+    {% if invite %} {% for key, value in invite.items() %}
+    {% if key == "qr_code_img_url" %}
+    <img src="{{value}}" alt="{{fullname}} QR code" class="my-2" />
+    {% elif key == "qr_code_img_public_key" %}
+    {% elif key == "created_at" %}
+    <p>
+        <span class="font-medium mr-2 text-purple-500"
+          >{{ key| lower | replace("_", " ") }}:</span
+        >{{ value | strftime }}
+    </p>
+    {% else %}
+    <p>
+        <span class="font-medium mr-2 text-purple-500"
+          >{{ key| lower | replace("_", " ") }}:</span
+        >{{ value }}
+    </p>
+    {% endif %}
+    {% endfor %} {% endif %}
+</div>
+
+{% endblock content %}
+

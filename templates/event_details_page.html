@@ -53,8 +53,27 @@
         #}
       </label>
 
-      <button type="submit" class="btn cursor-pointer rounded-sm w-fit">Invite</button>
+      <button type="submit" class="btn mt-1 cursor-pointer rounded-sm w-fit">Invite</button>
   </form>
+
+  <hr class="my-5"/>
+
+  <section class="flex flex-col gap-5">
+    <h3 class="font-medium text-lg">Invited guests listing</h3>
+    <ul class="list-decimal list-inside">
+      {% if invites %} {% for invite in invites %}
+      <li>
+        <a
+          class="underline text-purple-300"
+          href="{{ url_for('single_invite', invite_id=invite.id) }}"
+          >{{invite.email}} - {{invite.fullname}}</a
+        >
+      </li>
+      {% endfor %} {%else%}
+      <p>No invites</p>
+      {% endif %}
+    </ul>
+  </section>
 </div>
 
 {% endblock content %}

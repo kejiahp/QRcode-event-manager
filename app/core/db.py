@@ -19,7 +19,7 @@ db = client[settings.DATABASE_NAME]
 class MONGO_COLLECTIONS(Enum):
     EVENTS = "events"
     USERS = "users"
-    INVITE = "invite"
+    INVITE = "invites"
 
 
 def get_collection(collection_name: MONGO_COLLECTIONS) -> Union[Collection, None]:

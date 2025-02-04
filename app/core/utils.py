@@ -8,6 +8,10 @@ from fastapi.exceptions import HTTPException
 # Helper class for MongoDB ObjectId
 # Not used though inserted for reference
 class PyObjectId(ObjectId):
+    """
+    # using `PyObjectIdV2` over `PyObjectId` shows no noticable difference in the collection document
+    """
+
     @classmethod
     def __get_validators__(cls):
         yield cls.validate
@@ -50,7 +54,7 @@ class HTTPMessageException(HTTPException):
         self,
         status_code,
         message: str,
-        success: bool,
+        success: bool = False,
         headers=None,
     ):
         _detail = Message(
