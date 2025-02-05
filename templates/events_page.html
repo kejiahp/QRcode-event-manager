@@ -1,9 +1,16 @@
-{% extends "base.html" %} {% block content %}
+{% extends "user_base.html" %} {% block user_content %}
 
 <div class="w-screen h-[90vh] overflow-y-scroll p-5">
-  <h1 class="text-2xl font-semibold">
-    <span class="text-purple-500">{{email}}'s</span> events page
-  </h1>
+  <div class="flex items-center gap-2">
+      <a href={{ url_for('homepage') }} class="cursor-pointer rounded-sm border border-purple-500 px-1 py-1 flex items-center justify-center w-fit">
+      <svg class="inline" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M14.71 6.71c-.39-.39-1.02-.39-1.41 0L8.71 11.3c-.39.39-.39 1.02 0 1.41l4.59 4.59c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L10.83 12l3.88-3.88c.39-.39.38-1.03 0-1.41z"/></svg>
+    </a>
+    <h1 class="text-2xl font-semibold">
+      <span class="text-purple-500">{{email}}'s</span> events page
+    </h1>
+  </div>
+
+
 
   <section class="my-5 text-sm bg-transparent dark:bg-gray-600 p-2 rounded-lg">
     <h3 class="font-medium mb-2">Create an event</h3>
@@ -98,7 +105,4 @@
   </section>
 </div>
 
-{% endblock content %} {% block extra_scripts %}
-
-<script></script>
-{% endblock extra_scripts %}
+{% endblock user_content %} 

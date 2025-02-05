@@ -46,43 +46,6 @@ def get_events_page(request: Request, current_user: CurrentUserDeps) -> HTMLResp
     )
 
 
-@router.get("/{event_id}", name="single_event")
-def get_single_event(
-    request: Request, event_id: str, current_user: CurrentUserDeps
-) -> HTMLResponse:
-    event_collection = get_collection(MONGO_COLLECTIONS.EVENTS)
-    if event_collection is None:
-        raise HTTPMessageException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            message=collection_error_msg("create_event", MONGO_COLLECTIONS.EVENTS.name),
-            success=False,
-        )
-    invite_collection = get_collection(MONGO_COLLECTIONS.INVITE)
-    if invite_collection is None:
-        raise HTTPMessageException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            message=collection_error_msg(
-                "get_single_event", MONGO_COLLECTIONS.INVITE.name
-            ),
-        )
-    if (
-        event := event_collection.find_one(
-            {"_id": ObjectId(event_id), "created_by": current_user.id}
-        )
-    ) is None:
-        raise HTTPMessageException(
-            message="Event does not exist", status_code=status.HTTP_404_NOT_FOUND
-        )
-
-    event = EventModel(**event)
-    invites = invite_collection.find({"event_invited_to": event.id}).to_list(1000)
-    invite_coll = InviteCollection(invites=invites).model_dump()
-    context = {"event": event.model_dump(), "invites": invite_coll["invites"]}
-    return templates.TemplateResponse(
-        request=request, name="event_details_page.html", context=context
-    )
-
-
 @router.post("/create", name="create_event")
 def create_event(
     request: Request,
@@ -206,6 +169,14 @@ def create_invitation(
         print(exc)
         print("#### FAILED TO SEND GUEST INVITATION EMAIL ####")
 
+        raise HTTPMessageException(
+            message=(
+                exc.message if hasattr(exc, "message") else "Something went wrong"
+            ),
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            success=False,
+        )
+
     return RedirectResponse(
         url=request.url_for("single_event", event_id=event_id),
         status_code=status.HTTP_302_FOUND,
@@ -268,8 +239,7 @@ def verify_invite_code(
             status_code=status.HTTP_400_BAD_REQUEST,
         )
     update_opt = {"invite_accepted": True, "invite_accepted_at": datetime.now()}
-    # TODO: remove this
-    print("update_opt", update_opt)
+
     update_result = invite_collection.find_one_and_update(
         {"_id": ObjectId(invite.id)},
         {"$set": update_opt},
@@ -277,7 +247,7 @@ def verify_invite_code(
     )
     if update_result is not None:
         query_string = urllib.parse.urlencode(
-            {"message": "Invite confirmed and accepted"}
+            {"message": f"{invite.fullname}'s invite is valid"}
         )
         return RedirectResponse(
             status_code=status.HTTP_302_FOUND,
@@ -300,7 +270,50 @@ def verification_result_page(
             message="message url search parameter is required",
             status_code=status.HTTP_400_BAD_REQUEST,
         )
+    if not message.endswith("valid"):
+        raise HTTPMessageException(
+            message="invalid message search parameter",
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
     context = {"message": message}
     return templates.TemplateResponse(
-        request=request, name="verify_invite_page.html", context=context
+        request=request, name="verification_result.html", context=context
+    )
+
+
+@router.get("/{event_id}", name="single_event")
+def get_single_event(
+    request: Request, event_id: str, current_user: CurrentUserDeps
+) -> HTMLResponse:
+    event_collection = get_collection(MONGO_COLLECTIONS.EVENTS)
+    if event_collection is None:
+        raise HTTPMessageException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            message=collection_error_msg("create_event", MONGO_COLLECTIONS.EVENTS.name),
+            success=False,
+        )
+    invite_collection = get_collection(MONGO_COLLECTIONS.INVITE)
+    if invite_collection is None:
+        raise HTTPMessageException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            message=collection_error_msg(
+                "get_single_event", MONGO_COLLECTIONS.INVITE.name
+            ),
+        )
+    if (
+        event := event_collection.find_one(
+            {"_id": ObjectId(event_id), "created_by": current_user.id}
+        )
+    ) is None:
+        raise HTTPMessageException(
+            message="Event does not exist", status_code=status.HTTP_404_NOT_FOUND
+        )
+
+    event = EventModel(**event)
+    invites = invite_collection.find({"event_invited_to": event.id}).to_list(1000)
+    invite_coll = InviteCollection(invites=invites).model_dump()
+    context = {"event": event.model_dump(), "invites": invite_coll["invites"]}
+    return templates.TemplateResponse(
+        request=request, name="event_details_page.html", context=context
     )

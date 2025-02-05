@@ -55,8 +55,11 @@ class HTTPMessageException(HTTPException):
         status_code,
         message: str,
         success: bool = False,
+        json_res=False,
         headers=None,
     ):
+        # used in combination with the global exception handler, to determine response format
+        self.json_res = json_res
         _detail = Message(
             message=message, status_code=status_code, success=success, data=None
         )
@@ -67,3 +70,12 @@ class HTTPMessageException(HTTPException):
 
 def collection_error_msg(func_name: str, collection_name: str) -> str:
     return f"[{func_name}]: Collection with name: {collection_name} was not found."
+
+
+STATUS_CODE_TO_MESSAGE = {
+    500: "Internal server error",
+    404: "Not found",
+    400: "Bad request",
+    403: "Forbidden request",
+    503: "Serivce unavailable",
+}

@@ -3,16 +3,14 @@
 <div
   class="w-screen h-[90vh] overflow-y-scroll flex gap-2 justify-center items-center flex-col"
 >
-  <a href="{{ url_for('auth') }}#login" class="btn rounded-sm w-[100px]"
-    >Login</a
-  >
+  <a href="{{ url_for('auth') }}" class="btn rounded-sm w-[100px]">Login</a>
   <a
-    href="{{ url_for('auth') }}#signup"
+    href="{{ url_for('auth') }}"
     class="btn rounded-sm bg-transparent border border-purple-500 text-purple-500 w-[100px]"
   >
     Sign up
   </a>
-  <a href="{{ url_for('auth') }}" class="underline text-purple-500"
+  <a href="{{ url_for('forgot_password') }}" class="underline text-purple-500"
     >Forgot password</a
   >
 </div>

@@ -1,0 +1,28 @@
+{% extends "base.html" %} {% block content %}
+
+<div
+  class="w-screen h-[90vh] overflow-y-scroll p-5 text-sm flex justify-center items-center"
+>
+  <section class="flex flex-col gap-2 items-center">
+    <h1 class="text-4xl font-extralight text-center max-w-[500px]">
+      {% if title %} {{title|title}} {% else %} Oops...something went wrong {%
+      endif %}
+    </h1>
+    <p class="font-semibold italic">
+      {% if message %} {{ message }} {% endif %}
+    </p>
+    <p>error code: {{status_code}}</p>
+
+    <div class="my-5">
+      <button
+        onclick="window.history.back()"
+        class="cursor-pointer btn rounded-sm"
+      >
+        Back
+      </button>
+      <a href="{{ url_for('homepage') }}" class="btn rounded-sm">Home</a>
+    </div>
+  </section>
+</div>
+
+{% endblock content %}

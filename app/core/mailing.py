@@ -72,3 +72,14 @@ def generate_event_invitation_email(
         },
     )
     return EmailData(html_content=html_content, subject=subject)
+
+
+def generate_password_reset_email(*, password_reset_link: str) -> EmailData:
+    subject = f"Password Reset Request"
+    html_content = render_email_template(
+        template_name="reset_password_mail.html",
+        context={
+            "password_reset_link": password_reset_link,
+        },
+    )
+    return EmailData(html_content=html_content, subject=subject)

@@ -48,7 +48,7 @@ function authenticationHandler(event) {
   /**@type {HTMLSpanElement} */
   const passwordErrMsg = document.getElementById("passwordErrMsg");
 
-  if (!email.value || email.value.length < 8) {
+  if (!email.value || email.value.length < 5) {
     emailErrMsg.textContent = "Email is required";
   } else {
     emailErrMsg.textContent = "";
@@ -80,7 +80,17 @@ function authenticationHandler(event) {
     authType: checkedValue,
   };
 
-  if (!payload.email || !payload.password || !payload.authType) {
+  const errorMsgDisplayed =
+    emailErrMsg.textContent !== "" ||
+    passwordErrMsg.textContent !== "" ||
+    authOptErrMsg.textContent !== "";
+
+  if (
+    !payload.email ||
+    !payload.password ||
+    !payload.authType ||
+    errorMsgDisplayed
+  ) {
     displayToast("error", "All fields are required");
     return;
   }
@@ -96,7 +106,9 @@ function authenticationHandler(event) {
       },
       body: JSON.stringify(payload),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        return res.json();
+      })
       .then((/**@type {SuccessResponse | ErrorResponse}*/ res) => {
         if (res.detail && !res.detail.success) {
           displayToast("error", res.detail.message);
@@ -107,8 +119,12 @@ function authenticationHandler(event) {
         }
       })
       .catch((/**@type {Error}*/ error) => {
+        let err_msg = null;
+        if (error?.message && error.message instanceof string) {
+          err_msg = error.message;
+        }
         console.error(error);
-        displayToast("error", error.message);
+        displayToast("error", err_msg);
       });
   } else if (payload.authType === "sign_up") {
     // remove `authType`
@@ -131,8 +147,12 @@ function authenticationHandler(event) {
         }
       })
       .catch((/**@type {Error}*/ error) => {
+        let err_msg = null;
+        if (error?.message && error.message instanceof string) {
+          err_msg = error.message;
+        }
         console.error(error);
-        displayToast("error", error.message);
+        displayToast("error", err_msg);
       });
   } else {
     displayToast(

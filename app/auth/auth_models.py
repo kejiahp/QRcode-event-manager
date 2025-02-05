@@ -66,3 +66,12 @@ class UpdateUserModel(BaseModel):
         arbitrary_types_allowed=True,
         json_encoders={ObjectId: str},
     )
+
+
+class UpdateUserPassword(BaseModel):
+    reset_code: str
+    password: str = Field(max_length=255, min_length=8)
+
+
+class UpdateUserEmail(BaseModel):
+    email: EmailStr

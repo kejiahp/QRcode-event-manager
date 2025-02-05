@@ -1,14 +1,21 @@
 # import uvicorn
+import arel
+from bson.errors import BSONError
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import (
+    HTMLResponse,
+    RedirectResponse,
+    JSONResponse,
+)
+from starlette.middleware.cors import CORSMiddleware
+
 from app.auth import auth_routes
 from app.events import events_routes
-from fastapi.middleware.gzip import GZipMiddleware
-import arel
-from fastapi.staticfiles import StaticFiles
 from app.core import settings, templates
 from app.core.deps import IsUserAuthenticatedDeps
-from starlette.middleware.cors import CORSMiddleware
+from app.core.utils import HTTPMessageException, STATUS_CODE_TO_MESSAGE
 
 application = FastAPI()
 
@@ -53,6 +60,16 @@ def get_homepage(request: Request) -> HTMLResponse:
     return templates.TemplateResponse(request=request, name="homepage.html")
 
 
+@application.get("/forgot-password", name="forgot_password")
+def forgot_password_page(
+    request: Request, email: str = None, reset_code: str = None
+) -> HTMLResponse:
+    context = {"reset_code": reset_code, "email": email}
+    return templates.TemplateResponse(
+        request=request, name="forgot_password.html", context=context
+    )
+
+
 @application.get("/authentication", name="auth")
 def get_authentication_page(
     request: Request, redirect_url: IsUserAuthenticatedDeps
@@ -60,6 +77,32 @@ def get_authentication_page(
     if isinstance(redirect_url, RedirectResponse):
         return redirect_url
     return templates.TemplateResponse(request=request, name="authentication.html")
+
+
+@application.exception_handler(HTTPMessageException)
+def http_msg_exception_handler(request: Request, exc: HTTPMessageException):
+    if exc.json_res:
+        return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+    title = STATUS_CODE_TO_MESSAGE.get(exc.status_code, None)
+    context = {
+        "title": title,
+        "message": exc.detail["message"],
+        "status_code": exc.detail["status_code"],
+    }
+    return templates.TemplateResponse(
+        request=request, name="error_page.html", context=context
+    )
+
+
+@application.exception_handler(BSONError)
+def invalid_objectID_exception_handler(request: Request, exc: BSONError):
+    if len(exc.args) > 0 and isinstance(exc.args[0], str):
+        msg = exc.args[0]
+    return templates.TemplateResponse(
+        request=request,
+        name="error_page.html",
+        context={"message": msg, "status_code": 500},
+    )
 
 
 # use `python -m app.main` to run this in base python
@@ -70,7 +113,3 @@ def get_authentication_page(
 #         port=5000,
 #         reload=True if settings.DEBUG else False,
 #     )
-
-# TODO: catch error
-# bson.errors.InvalidId
-# HTTPMessageException

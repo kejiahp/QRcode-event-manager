@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% block content %}
+{% extends "user_base.html" %} {% block user_content %}
 
 <div class="w-screen h-[90vh] overflow-y-scroll p-5 text-sm">
     <div class="flex items-center gap-2">
@@ -13,11 +13,11 @@
     {% if key == "qr_code_img_url" %}
     <img src="{{value}}" alt="{{fullname}} QR code" class="my-2" />
     {% elif key == "qr_code_img_public_key" %}
-    {% elif key == "created_at" %}
+    {% elif key == "created_at" or key=="invite_accepted_at" %}
     <p>
         <span class="font-medium mr-2 text-purple-500"
           >{{ key| lower | replace("_", " ") }}:</span
-        >{{ value | strftime }}
+        >{{ value | strftime("%A, %d %B %Y") }}
     </p>
     {% else %}
     <p>
@@ -29,5 +29,5 @@
     {% endfor %} {% endif %}
 </div>
 
-{% endblock content %}
+{% endblock user_content %}
 

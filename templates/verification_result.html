@@ -1,5 +1,11 @@
-{% extends "base.html" %} {% block content %}
+{% extends "user_base.html" %} {% block user_content %}
 
-<h1>Here are some stuff for you my boy</h1>
+<div
+  class="w-screen h-[90vh] overflow-y-scroll p-5 text-sm flex justify-center items-center"
+>
+  <h1 class="text-4xl font-semibold text-center">
+    <span class="mx-1"> ✨ </span> {{ message }} <span class="mx-1"> ✨ </span>
+  </h1>
+</div>
 
-{% endblock content %}
+{% endblock user_content %}

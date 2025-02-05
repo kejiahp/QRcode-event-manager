@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% block content %}
+{% extends "user_base.html" %} {% block user_content %}
 
 <div class="w-screen h-[90vh] overflow-y-scroll p-5 text-sm">
   <div class="flex items-center gap-2">
@@ -10,11 +10,19 @@
 
   <hr class="my-2" />
   {% if event %} {% for key, value in event.items() %}
+  {% if key == "created_at" or key == "start_date" or key == "end_date" %}
+  <p>
+    <span class="font-medium mr-2 text-purple-500"
+      >{{ key| lower | replace("_", " ") }}:</span
+    >{{ value | strftime("%A, %d %B %Y") }}
+  </p>
+  {% else %}
   <p>
     <span class="font-medium mr-2 text-purple-500"
       >{{ key| lower | replace("_", " ") }}:</span
     >{{ value }}
   </p>
+  {% endif %}
   {% endfor %} {% endif %}
 
   <hr class="my-5"/>
@@ -76,4 +84,4 @@
   </section>
 </div>
 
-{% endblock content %}
+{% endblock user_content %}

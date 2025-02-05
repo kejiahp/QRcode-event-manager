@@ -40,7 +40,6 @@ def get_current_user(tk: TokenFromCookieDep = None) -> UserModel:
             message="Auth token required",
             success=False,
         )
-    # TODO: Redirect to authentication page logic
     try:
         payload = jwt.decode(tk, settings.SECRET_KEY, security.ALGORITHM)
         token_data = TokenPayload(**payload)
@@ -70,7 +69,7 @@ def get_current_user(tk: TokenFromCookieDep = None) -> UserModel:
     if not user.is_active:
         raise HTTPMessageException(
             message="Users account is not activated",
-            status_code=status.HTTP_400_FORBIDDEN,
+            status_code=status.HTTP_400_BAD_REQUEST,
             success=False,
         )
     return user

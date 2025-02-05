@@ -5,3 +5,11 @@ I'm quite proficeint using [Django](https://www.djangoproject.com/) to develop s
 With that in mind paired with my interset in the ecosystem, I decided to go with [FastAPI](https://fastapi.tiangolo.com/) and what better way is there to learn a framework than to build something with it.
 
 I also chose to use FastAPI for a school project, soo...yeah.
+
+_**If you see something you dont like close your eyes:**_ This might not be the best FastAPI project you find, it's my first ride with the framework and like 70% of the third party packages used.
+
+#### Memorable packages discovered
+
+- [MJML - for email templating](https://mjml.io/)
+- [Arel - for hot reloads](https://pypi.org/project/arel/)
+- [uv - An extremely fast Python package and project manager, written in Rust.](https://docs.astral.sh/uv/)
