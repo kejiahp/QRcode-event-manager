@@ -2,8 +2,8 @@
 # https://hub.docker.com/_/python
 FROM python:3.13.1-alpine
 
-# Create and change to the app directory.
-WORKDIR /app
+# Create and change to the `/home/qrcode-manager` directory.
+WORKDIR /qrcode-manager
 
 # Copy local code to the container image.
 COPY . .
@@ -17,4 +17,4 @@ EXPOSE 8000
 # Run the web service on container startup.
 # CMD ["fastapi", "run", "--workers", "4", "app/main.py"]
 
-CMD ["uvicorn", "app.main:application", "--host", "0.0.0.0", "--port", "8000", "--workers", "4", "--proxy-headers"]
+CMD ["uvicorn", "app.main:application", "--host", "0.0.0.0", "--port", "8000", "--workers", "2", "--proxy-headers"]

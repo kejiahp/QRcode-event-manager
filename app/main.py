@@ -10,6 +10,7 @@ from fastapi.responses import (
     JSONResponse,
 )
 from starlette.middleware.cors import CORSMiddleware
+from pathlib import Path
 
 from app.auth import auth_routes
 from app.events import events_routes
@@ -17,7 +18,7 @@ from app.core import settings, templates
 from app.core.deps import IsUserAuthenticatedDeps
 from app.core.utils import HTTPMessageException, STATUS_CODE_TO_MESSAGE
 
-application = FastAPI(root_path="/", root_path_in_servers=False)
+application = FastAPI()
 
 
 async def reload_logger():
@@ -53,12 +54,16 @@ async def force_https_middleware(request: Request, call_next):
 
     Hence, I decided to force `https` protocol in production servers, using the `X-Forwarded-Proto` header added to requests by the load balancer or proxy (I dunno the specifics 🤷‍♂️)
     """
-    if (lb_proto := request.headers.get("X-Forwarded-Proto", "http")) == "https":
-        request.scope["scheme"] = "https"  # Force HTTPS
+    if settings.ENVIRONMENT == "production":
+        if (lb_proto := request.headers.get("X-Forwarded-Proto", "http")) == "https":
+            request.scope["scheme"] = "https"  # Force HTTPS
     return await call_next(request)
 
 
-application.mount("/static", StaticFiles(directory="static"), name="static")
+static_dir = Path(__file__).parent.parent / "static"
+static_dir = str(static_dir)
+
+application.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 # to serve compressed files
 application.add_middleware(GZipMiddleware)
