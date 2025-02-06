@@ -79,6 +79,15 @@ def get_authentication_page(
     return templates.TemplateResponse(request=request, name="authentication.html")
 
 
+@application.get("/debug")
+def debug_headers(request: Request):
+    return {
+        "X-Forwarded-Proto": request.headers.get("X-Forwarded-Proto", "MISSING"),
+        ":scheme:": request.headers.get("scheme", "MISSING"),
+        "scheme": request.url.scheme,
+    }
+
+
 @application.exception_handler(HTTPMessageException)
 def http_msg_exception_handler(request: Request, exc: HTTPMessageException):
     if exc.json_res:
