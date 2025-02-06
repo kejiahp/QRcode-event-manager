@@ -45,16 +45,18 @@ if _debug := settings.DEBUG:
     templates.env.globals["DEBUG"] = _debug
     templates.env.globals["hot_reload"] = hot_reload
 
-# @application.middleware("http")
-# async def force_https_middleware(request: Request, call_next):
-#     """
-#     Railways load balancer seem to be converting the `scheme` header from `https` to `http` making urls built using `request.url_for` have the `http` protocol in prodution rather than `https`.
 
-#     Hence, I decided to force `https` protocol in production servers, using the `X-Forwarded-Proto` header added to requests by the load balancer or proxy (I dunno the specifics 🤷‍♂️)
-#     """
-#     if (lb_proto := request.headers.get("X-Forwarded-Proto", "http")) == "https":
-#         request.scope["scheme"] = "https"  # Force HTTPS
-#     return await call_next(request)
+@application.middleware("http")
+async def force_https_middleware(request: Request, call_next):
+    """
+    Railways load balancer seem to be converting the `scheme` header from `https` to `http` making urls built using `request.url_for` have the `http` protocol in prodution rather than `https`.
+
+    Hence, I decided to force `https` protocol in production servers, using the `X-Forwarded-Proto` header added to requests by the load balancer or proxy (I dunno the specifics 🤷‍♂️)
+    """
+    if (lb_proto := request.headers.get("X-Forwarded-Proto", "http")) == "https":
+        request.scope["scheme"] = "https"  # Force HTTPS
+    return await call_next(request)
+
 
 application.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -90,15 +92,18 @@ def get_authentication_page(
     return templates.TemplateResponse(request=request, name="authentication.html")
 
 
-@application.get("/debug")
-def debug_headers(request: Request):
-    all_headers = {k: v for k, v in request.headers.items()}
-    return {
-        "X-Forwarded-Proto": request.headers.get("X-Forwarded-Proto", "MISSING"),
-        ":scheme:": request.headers.get("scheme:", "MISSING"),
-        "scheme": request.url.scheme,
-        "all_headers": all_headers,
-    }
+# @application.get("/debug")
+# def debug_headers(request: Request):
+#     """
+#     view all headers set by the load balancer or proxy before sending the request to the running server hosted on Railway
+#     """
+#     all_headers = {k: v for k, v in request.headers.items()}
+#     return {
+#         "X-Forwarded-Proto": request.headers.get("X-Forwarded-Proto", "MISSING"),
+#         ":scheme:": request.headers.get("scheme:", "MISSING"),
+#         "scheme": request.url.scheme,
+#         "all_headers": all_headers,
+#     }
 
 
 @application.exception_handler(HTTPMessageException)
